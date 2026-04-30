@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-exporter
+  namespace: platform-infra-dev
+  labels:
+    app: metrics-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metrics-exporter
+  template:
+    metadata:
+      labels:
+        app: metrics-exporter
+    spec:
+      containers:
+        - name: exporter
+          image: nginx:1.27.4
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-exporter
+  namespace: platform-infra-dev
+spec:
+  selector:
+    app: metrics-exporter
+  ports:
+    - port: 9090
+      targetPort: 9090
